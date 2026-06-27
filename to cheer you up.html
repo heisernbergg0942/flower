@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> 💌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    body {
+      min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(ellipse at 60% 40%, #fce4ec 0%, #f8bbd9 55%, #fce4ec 100%);
+      overflow:hidden;
+      font-family:'Playfair Display',serif;
+    }
+
+    /* ── ambient petals ── */
+    #petals{position:fixed;inset:0;pointer-events:none;z-index:0;}
+    .petal{position:absolute;font-size:1.2rem;opacity:0;animation:petalDrift linear infinite;}
+    @keyframes petalDrift{
+      0%  {transform:translateY(0) rotate(0deg) scale(.7);opacity:0}
+      8%  {opacity:.45}
+      92% {opacity:.45}
+      100%{transform:translateY(-105vh) rotate(360deg) scale(1.1);opacity:0}
+    }
+
+    /* ── scene ── */
+    .scene{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2rem;}
+
+    .hint{
+      font-style:italic;font-size:1rem;color:#b5567a;letter-spacing:.05em;
+      animation:fadeUp .9s ease both;transition:opacity .5s;
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    /* ══ ENVELOPE ══ */
+    .env{
+      position:relative;width:340px;height:230px;
+      cursor:pointer;perspective:1000px;
+    }
+
+    /* SVG body */
+    .env-svg{position:absolute;inset:0;width:100%;height:100%;}
+
+    /* flap */
+    .flap{
+      position:absolute;top:0;left:0;right:0;height:52%;
+      transform-origin:top center;transform-style:preserve-3d;
+      transition:transform .8s cubic-bezier(.4,0,.2,1);z-index:10;
+    }
+    .flap svg{width:100%;height:100%;display:block;}
+    .env.open .flap{transform:rotateX(-178deg);}
+
+    /* seal */
+    .seal{
+      position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);
+      font-size:1.7rem;z-index:20;
+      transition:opacity .3s .15s,transform .3s .15s;
+      filter:drop-shadow(0 2px 5px rgba(0,0,0,.18));
+    }
+    .env.open .seal{opacity:0;transform:translate(-50%,-50%) scale(.3);}
+
+    /* ── FLOWER GARDEN (revealed on open) ── */
+    .garden{
+      position:absolute;
+      left:50%;bottom:18px;
+      transform:translateX(-50%) translateY(30px);
+      width:300px;height:200px;
+      opacity:0;z-index:6;
+      transition:opacity .7s .55s, transform .7s .55s;
+    }
+    .env.open .garden{opacity:1;transform:translateX(-50%) translateY(-52px);}
+    .garden svg{width:100%;height:100%;}
+
+    /* ── bottom message ── */
+    .msg{
+      font-style:italic;font-size:1.2rem;color:#5a2040;
+      text-align:center;line-height:1.6;
+      opacity:0;transform:translateY(10px);
+      transition:opacity .9s 1.3s,transform .9s 1.3s;
+    }
+    .env.open~.msg{opacity:1;transform:none;}
+
+    /* confetti */
+    #conf{position:fixed;inset:0;pointer-events:none;z-index:50;}
+    .c{position:absolute;opacity:0;}
+    .c.go{animation:cFall 1.5s ease-out forwards;}
+    @keyframes cFall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(300px) rotate(720deg)}}
+  </style>
+</head>
+<body>
+
+<div id="petals"></div>
+<div id="conf"></div>
+
+<div class="scene">
+  <p class="hint" id="hint">sark berk merl 💌</p>
+
+  <div class="env" id="env" onclick="open_(event)">
+
+    <!-- FLOWER GARDEN SVG — shown when opened -->
+    <div class="garden">
+      <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- reusable 6-petal flower -->
+          <!-- we'll just inline each flower -->
+        </defs>
+
+        <!-- ── STEMS ── -->
+        <!-- stem 1 centre tall -->
+        <path d="M150 195 Q148 160 145 120" stroke="#7eba74" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- stem 2 left -->
+        <path d="M150 195 Q130 162 110 128" stroke="#7eba74" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- stem 3 right -->
+        <path d="M150 195 Q168 160 185 128" stroke="#7eba74" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- stem 4 far left -->
+        <path d="M150 195 Q118 168 88 148" stroke="#7eba74" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- stem 5 far right -->
+        <path d="M150 195 Q182 166 210 148" stroke="#7eba74" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- stem 6 tiny left -->
+        <path d="M150 195 Q140 175 128 165" stroke="#7eba74" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <!-- stem 7 tiny right -->
+        <path d="M150 195 Q160 175 172 165" stroke="#7eba74" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+        <!-- ── LEAVES ── -->
+        <ellipse cx="125" cy="148" rx="14" ry="6" fill="#9dd494" transform="rotate(-35 125 148)" opacity=".9"/>
+        <ellipse cx="174" cy="145" rx="14" ry="6" fill="#9dd494" transform="rotate(30 174 145)" opacity=".9"/>
+        <ellipse cx="96"  cy="155" rx="11" ry="5" fill="#b2e0a8" transform="rotate(-45 96 155)" opacity=".85"/>
+        <ellipse cx="206" cy="153" rx="11" ry="5" fill="#b2e0a8" transform="rotate(40 206 153)" opacity=".85"/>
+        <ellipse cx="136" cy="138" rx="10" ry="4" fill="#9dd494" transform="rotate(-20 136 138)" opacity=".8"/>
+        <ellipse cx="163" cy="136" rx="10" ry="4" fill="#9dd494" transform="rotate(22 163 136)" opacity=".8"/>
+
+        <!-- ══ FLOWERS ══ -->
+
+        <!-- FLOWER A — centre top — big pink -->
+        <g transform="translate(145,112)">
+          <circle cx="0"  cy="-18" r="13" fill="#f9a8d4"/>
+          <circle cx="16" cy="-9"  r="13" fill="#f9a8d4"/>
+          <circle cx="16" cy="9"   r="13" fill="#f9a8d4"/>
+          <circle cx="0"  cy="18"  r="13" fill="#f9a8d4"/>
+          <circle cx="-16" cy="9"  r="13" fill="#f9a8d4"/>
+          <circle cx="-16" cy="-9" r="13" fill="#f9a8d4"/>
+          <circle cx="0"  cy="0"   r="11" fill="#fde68a"/>
+          <circle cx="0"  cy="0"   r="5"  fill="#f59e0b" opacity=".6"/>
+        </g>
+
+        <!-- FLOWER B — left — medium rose -->
+        <g transform="translate(110,120)">
+          <circle cx="0"  cy="-14" r="10" fill="#f472b6"/>
+          <circle cx="12" cy="-7"  r="10" fill="#f472b6"/>
+          <circle cx="12" cy="7"   r="10" fill="#f472b6"/>
+          <circle cx="0"  cy="14"  r="10" fill="#f472b6"/>
+          <circle cx="-12" cy="7"  r="10" fill="#f472b6"/>
+          <circle cx="-12" cy="-7" r="10" fill="#f472b6"/>
+          <circle cx="0"  cy="0"   r="9"  fill="#fde68a"/>
+          <circle cx="0"  cy="0"   r="4"  fill="#f59e0b" opacity=".55"/>
+        </g>
+
+        <!-- FLOWER C — right — medium blush -->
+        <g transform="translate(186,120)">
+          <circle cx="0"  cy="-14" r="10" fill="#fbcfe8"/>
+          <circle cx="12" cy="-7"  r="10" fill="#fbcfe8"/>
+          <circle cx="12" cy="7"   r="10" fill="#fbcfe8"/>
+          <circle cx="0"  cy="14"  r="10" fill="#fbcfe8"/>
+          <circle cx="-12" cy="7"  r="10" fill="#fbcfe8"/>
+          <circle cx="-12" cy="-7" r="10" fill="#fbcfe8"/>
+          <circle cx="0"  cy="0"   r="9"  fill="#fde68a"/>
+          <circle cx="0"  cy="0"   r="4"  fill="#f59e0b" opacity=".55"/>
+        </g>
+
+        <!-- FLOWER D — far left — small deep pink -->
+        <g transform="translate(88,142)">
+          <circle cx="0"  cy="-11" r="8" fill="#ec4899"/>
+          <circle cx="10" cy="-5.5" r="8" fill="#ec4899"/>
+          <circle cx="10" cy="5.5"  r="8" fill="#ec4899"/>
+          <circle cx="0"  cy="11"  r="8" fill="#ec4899"/>
+          <circle cx="-10" cy="5.5" r="8" fill="#ec4899"/>
+          <circle cx="-10" cy="-5.5" r="8" fill="#ec4899"/>
+          <circle cx="0"  cy="0"   r="7" fill="#fde68a"/>
+        </g>
+
+        <!-- FLOWER E — far right — small lavender-pink -->
+        <g transform="translate(210,142)">
+          <circle cx="0"  cy="-11" r="8" fill="#e9b4f0"/>
+          <circle cx="10" cy="-5.5" r="8" fill="#e9b4f0"/>
+          <circle cx="10" cy="5.5"  r="8" fill="#e9b4f0"/>
+          <circle cx="0"  cy="11"  r="8" fill="#e9b4f0"/>
+          <circle cx="-10" cy="5.5" r="8" fill="#e9b4f0"/>
+          <circle cx="-10" cy="-5.5" r="8" fill="#e9b4f0"/>
+          <circle cx="0"  cy="0"   r="7" fill="#fde68a"/>
+        </g>
+
+        <!-- TULIP left tiny -->
+        <g transform="translate(128,161)">
+          <ellipse cx="0" cy="0" rx="8" ry="12" fill="#f472b6"/>
+          <ellipse cx="-4" cy="-3" rx="4.5" ry="10" fill="#ec4899" opacity=".7"/>
+          <ellipse cx="4"  cy="-3" rx="4.5" ry="10" fill="#ec4899" opacity=".7"/>
+          <ellipse cx="0"  cy="-8" rx="5"   ry="6"  fill="#fda4c8"/>
+        </g>
+
+        <!-- TULIP right tiny -->
+        <g transform="translate(172,159)">
+          <ellipse cx="0" cy="0" rx="8" ry="12" fill="#fb7dae"/>
+          <ellipse cx="-4" cy="-3" rx="4.5" ry="10" fill="#f472b6" opacity=".7"/>
+          <ellipse cx="4"  cy="-3" rx="4.5" ry="10" fill="#f472b6" opacity=".7"/>
+          <ellipse cx="0"  cy="-8" rx="5"   ry="6"  fill="#fda4c8"/>
+        </g>
+
+        <!-- tiny dot buds scattered -->
+        <circle cx="98" cy="138" r="5" fill="#f9a8d4" opacity=".8"/>
+        <circle cx="202" cy="136" r="5" fill="#e9b4f0" opacity=".8"/>
+        <circle cx="150" cy="98"  r="4" fill="#fde68a" opacity=".7"/>
+
+        <!-- tiny sparkle stars -->
+        <text x="68"  y="128" font-size="12" fill="#f9a8d4" opacity=".7">✦</text>
+        <text x="224" y="126" font-size="12" fill="#e9b4f0" opacity=".7">✦</text>
+        <text x="148" y="78"  font-size="10" fill="#fde68a" opacity=".8">✦</text>
+        <text x="100" y="108" font-size="8"  fill="#fda4c8" opacity=".6">✿</text>
+        <text x="190" y="108" font-size="8"  fill="#c084fc" opacity=".6">✿</text>
+      </svg>
+    </div>
+
+    <!-- ENVELOPE SVG BODY -->
+    <svg class="env-svg" viewBox="0 0 340 230" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="sh" x="-10%" y="-10%" width="120%" height="130%">
+          <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#c0558a" flood-opacity=".28"/>
+        </filter>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#e8749e"/>
+          <stop offset="100%" stop-color="#d03070"/>
+        </linearGradient>
+        <linearGradient id="sl" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#e05090"/><stop offset="100%" stop-color="#c82868"/>
+        </linearGradient>
+        <linearGradient id="sr" x1="100%" y1="0%" x2="0%" y2="0%">
+          <stop offset="0%" stop-color="#e05090"/><stop offset="100%" stop-color="#c82868"/>
+        </linearGradient>
+        <linearGradient id="bot" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#f5b8d0"/><stop offset="100%" stop-color="#e8749e"/>
+        </linearGradient>
+      </defs>
+      <!-- body -->
+      <rect x="0" y="0" width="340" height="230" rx="6" fill="url(#bg)" filter="url(#sh)"/>
+      <!-- side flaps -->
+      <polygon points="0,0 0,230 170,115"   fill="url(#sl)" opacity=".82"/>
+      <polygon points="340,0 340,230 170,115" fill="url(#sr)" opacity=".82"/>
+      <!-- bottom flap -->
+      <polygon points="0,230 340,230 170,115" fill="url(#bot)" opacity=".95"/>
+      <!-- crease lines -->
+      <line x1="0"   y1="0"   x2="170" y2="115" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+      <line x1="340" y1="0"   x2="170" y2="115" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+      <line x1="0"   y1="230" x2="170" y2="115" stroke="rgba(255,255,255,.10)" stroke-width="1"/>
+      <line x1="340" y1="230" x2="170" y2="115" stroke="rgba(255,255,255,.10)" stroke-width="1"/>
+    </svg>
+
+    <!-- SEAL -->
+    <div class="seal">💌</div>
+
+    <!-- TOP FLAP -->
+    <div class="flap">
+      <svg viewBox="0 0 340 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="fl" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f9c0d8"/><stop offset="100%" stop-color="#e8749e"/>
+          </linearGradient>
+        </defs>
+        <polygon points="0,0 340,0 170,120" fill="url(#fl)"/>
+        <line x1="0"   y1="0" x2="170" y2="120" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <line x1="340" y1="0" x2="170" y2="120" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <line x1="0"   y1="1" x2="340" y2="1"   stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+  </div><!-- /env -->
+
+  <p class="msg" id="msg"> hope you feel better na 🌸</p>
+</div>
+
+<script>
+/* ambient petals */
+const pb = document.getElementById('petals');
+const emojis = ['🌸','🌷','🌺','🌼','✿','💮','🩷','💗','✦'];
+for(let i=0;i<26;i++){
+  const p=document.createElement('span');
+  p.className='petal';
+  p.textContent=emojis[i%emojis.length];
+  p.style.left=Math.random()*100+'vw';
+  p.style.bottom='-2rem';
+  p.style.fontSize=(0.7+Math.random()*1.2)+'rem';
+  p.style.animationDuration=(8+Math.random()*12)+'s';
+  p.style.animationDelay=(Math.random()*16)+'s';
+  pb.appendChild(p);
+}
+
+/* open */
+let opened=false;
+function open_(e){
+  if(opened)return; opened=true;
+  document.getElementById('env').classList.add('open');
+  document.getElementById('hint').style.opacity='0';
+  burst(e);
+}
+
+/* confetti + flower burst */
+const CC=['#f9a8d4','#f472b6','#fde68a','#fbcfe8','#e9b4f0','#fff','#7eba74','#fda4c8'];
+function burst(e){
+  const w=document.getElementById('conf');
+  const cx=window.innerWidth/2, cy=window.innerHeight*.42;
+  for(let i=0;i<80;i++){
+    const c=document.createElement('div'); c.className='c';
+    const a=Math.random()*Math.PI*2, d=50+Math.random()*180;
+    c.style.cssText=`left:${cx+Math.cos(a)*d*.5}px;top:${cy+Math.sin(a)*d*.3}px;
+      width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;
+      background:${CC[i%CC.length]};border-radius:${Math.random()>.5?'50%':'2px'};
+      transform:rotate(${Math.random()*360}deg);animation-delay:${Math.random()*.4}s`;
+    w.appendChild(c);
+    requestAnimationFrame(()=>c.classList.add('go'));
+    setTimeout(()=>c.remove(),2200);
+  }
+  /* flower emoji shower */
+  ['🌸','🌷','🌺','🌼','💗','🌸','🌷','✦'].forEach((em,i)=>{
+    const f=document.createElement('span');
+    f.textContent=em;
+    f.style.cssText=`position:absolute;font-size:${1.1+Math.random()}rem;
+      left:${cx+(Math.random()-.5)*340}px;top:${cy+(Math.random()-.5)*200}px;pointer-events:none`;
+    w.appendChild(f);
+    f.animate([
+      {opacity:1,transform:'translateY(0) scale(1) rotate(0deg)'},
+      {opacity:0,transform:`translateY(${180+Math.random()*160}px) scale(.2) rotate(${(Math.random()-.5)*400}deg)`}
+    ],{duration:1700+Math.random()*700,delay:i*55+Math.random()*250,easing:'ease-out',fill:'forwards'});
+    setTimeout(()=>f.remove(),2800);
+  });
+}
+</script>
+</body>
+</html>
